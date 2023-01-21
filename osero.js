@@ -4,6 +4,7 @@ const black = "●";
 const wall = "□";
 const blank = "・";
 let turn;
+let npc = false;
 
 window.addEventListener('DOMContentLoaded', function() {
 	setfield();
@@ -12,17 +13,37 @@ window.addEventListener('DOMContentLoaded', function() {
 	document.getElementById("turn").textContent = "黒のターン";
 })
 
-function run(pos){
-	
-	let inputRow = parseInt(pos.charAt(0));
-	let inputCol = parseInt(pos.charAt(1));
-	let inputPos = [inputRow,inputCol];
-	
-	if(canPutPosList(turn).length==0 && !isFinish()){
-		changeTurn();
-		document.getElementById("message").textContent = "置ける場所がありません";
+function changeNpc(){
+	npc = !npc;
+	setfield();
+	printField();
+	turn = black;
+	document.getElementById("turn").textContent = "黒のターン";
+	if(npc){
+		document.getElementById("npc").textContent = "2人で遊ぶ";
+	}else{
+		document.getElementById("npc").textContent = "1人で遊ぶ";
+	}
+}
+
+function runNpc(){
+	let start = new Date();
+	while (new Date() - start < 400);
+	let list = canPutPosList(white);
+	if(list.length!=0){
+		let index = Math.floor(Math.random()*list.length);
+		reverse(list[index]);
+	}
+	if(isFinish()){
+		printResult();
+		document.getElementById("turn").textContent = "";
 		return;
 	}
+	changeTurn();
+}
+
+function run(pos){
+	let inputPos = [parseInt(pos.charAt(0)),parseInt(pos.charAt(1))];
 	
 	let canPutFlag = false;
 	for(let canPutPos of canPutPosList(turn)) {
@@ -33,14 +54,20 @@ function run(pos){
 	}
 	if(canPutFlag) {
 		reverse(inputPos);
-		printField();
-		
 		if(isFinish()){
-			document.getElementById("turn").textContent = "";
 			printResult();
+			document.getElementById("turn").textContent = "";
 			return;
 		}else{
 			changeTurn();
+			if(canPutPosList(turn).length==0 && !isFinish()){
+				changeTurn();
+				document.getElementById("message").textContent = "置ける場所がありません";
+			}
+			if(npc && turn==white){
+				runNpc();
+				return;
+			}
 			return;
 		}
 	}else{
@@ -78,7 +105,6 @@ function setfield() {
 }
 
 function canPutPosList(color) {
-
 	const directions = [[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]];
 	let enemy = getEnemy(color);
 	let canPutList = [];
@@ -122,7 +148,6 @@ function canPutPosList(color) {
 }
 
 function reverse(inputPos) {
-
 	const directions = [[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]];
 	let enemy = getEnemy(turn);
 
@@ -166,6 +191,7 @@ function reverse(inputPos) {
 				}
 			}
 		}
+	printField();
 }
 
 function changeTurn() {
@@ -191,14 +217,6 @@ function isFinish() {
 		return false;
 	}
 	return true;
-}
-
-function checkInput(input) {
-	let mach = /^([1-9]\d*|0)$/;
-	if(input.length==2 && mach.test(input)) {
-		return true;
-	}
-	return false;
 }
 
 function printResult() {
