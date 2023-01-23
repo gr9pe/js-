@@ -27,8 +27,6 @@ function changeNpc(){
 }
 
 function runNpc(){
-	let start = new Date();
-	while (new Date() - start < 400);
 	let list = canPutPosList(white);
 	if(list.length!=0){
 		let index = Math.floor(Math.random()*list.length);
@@ -65,7 +63,7 @@ function run(pos){
 				document.getElementById("message").textContent = "置ける場所がありません";
 			}
 			if(npc && turn==white){
-				runNpc();
+				setTimeout(runNpc, 600);
 				return;
 			}
 			return;
