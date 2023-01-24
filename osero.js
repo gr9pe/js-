@@ -79,7 +79,7 @@ function printField() {
 	document.getElementById("fields").innerHTML = f; 
 	for(let i=0;i<10;i++) {
 		for(let j=0;j<10;j++) {
-			let stone = '<p class="yubi" onclick="run(\'' + i + j + '\')">　' + field[i][j] + ' </p>';
+			let stone = '<p class="yubi" onclick="run(\'' + i + j + '\')"> ' + field[i][j] + ' </p>';
 			document.getElementById("fields").innerHTML += stone;
 		}
 		document.getElementById("fields").innerHTML += '<br/>'; 
