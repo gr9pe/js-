@@ -184,7 +184,6 @@ function reverse(inputPos) {
 				}
 			}
 			if(reverseFlag) {
-				console.log(reversePosList);
 				for(let p of reversePosList) {
 				    field[p.row][p.col] = turn;
 				}
