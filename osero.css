@@ -1,0 +1,10 @@
+body{
+	text-align:center;
+}
+p{
+	display:inline;
+	font-size:24px;
+}
+.yubi{
+	cursor:pointer;
+}
