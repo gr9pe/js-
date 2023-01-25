@@ -6,6 +6,7 @@ const wall = "□";
 const blank = "・";
 let turn;
 let npc = false;
+let mode = false;
 
 window.addEventListener('DOMContentLoaded', function() {
 	setfield();
@@ -13,33 +14,6 @@ window.addEventListener('DOMContentLoaded', function() {
 	turn = black;
 	document.getElementById("turn").textContent = "黒のターン";
 })
-
-function changeNpc(){
-	npc = !npc;
-	setfield();
-	printField();
-	turn = black;
-	document.getElementById("turn").textContent = "黒のターン";
-	if(npc){
-		document.getElementById("npc").textContent = "2人で遊ぶ";
-	}else{
-		document.getElementById("npc").textContent = "1人で遊ぶ";
-	}
-}
-
-function runNpc(){
-	let list = canPutPosList(white);
-	if(list.length!=0){
-		let index = Math.floor(Math.random()*list.length);
-		reverse(list[index]);
-	}
-	if(isFinish()){
-		printResult();
-		document.getElementById("turn").textContent = "";
-		return;
-	}
-	changeTurn();
-}
 
 function run(pos){
 	let inputPos = [parseInt(pos.charAt(0)),parseInt(pos.charAt(1))];
@@ -65,8 +39,8 @@ function run(pos){
 			}
 			if(npc && turn==white){
 				setTimeout(runNpc, 600);
-				return;
 			}
+			printField();
 			return;
 		}
 	}else{
@@ -75,16 +49,37 @@ function run(pos){
 }
 
 function printField() {
-	let f ='';
-	document.getElementById("fields").innerHTML = f; 
+	document.getElementById("fields").innerHTML = ""; 
 	for(let i=0;i<10;i++) {
 		for(let j=0;j<10;j++) {
-			let stone = '<p class="yubi" onclick="run(\'' + i + j + '\')"> ' + field[i][j] + ' </p>';
-			document.getElementById("fields").innerHTML += stone;
+			if(mode && !npc || mode && turn == black){
+				document.getElementById("fields").innerHTML += suggestPrintField(i,j);
+			}else{
+				let stone ="";
+				stone = '<p class="yubi" onclick="run(\'' + i + j + '\')">' + field[i][j] + ' </p>';
+				document.getElementById("fields").innerHTML += stone;
+			}
 		}
 		document.getElementById("fields").innerHTML += '<br/>'; 
 	}
-	
+}
+
+function suggestPrintField(i,j){
+	let suggest = false;
+	for(let pos of canPutPosList(turn)){
+		if(i == pos[0] && j == pos[1]){
+			suggest = true;
+			break;
+		}
+	}
+	let stone = "";
+	if(suggest){
+		stone = '<p class="yubi" onclick="run(\'' + i + j + '\')">' + "＊" + ' </p>';
+		return stone;
+	}else{
+		stone = '<p class="yubi" onclick="run(\'' + i + j + '\')">' + field[i][j] + ' </p>';
+		return stone;
+	}
 }
 
 function setfield() {
@@ -184,12 +179,12 @@ function reverse(inputPos) {
 				}
 			}
 			if(reverseFlag) {
+				console.log(reversePosList);
 				for(let p of reversePosList) {
 				    field[p.row][p.col] = turn;
 				}
 			}
 		}
-	printField();
 }
 
 function changeTurn() {
@@ -211,7 +206,7 @@ function getEnemy(color) {
 }
 
 function isFinish() {
-	if(field.some(stone => stone.includes(blank))) {
+	if(field.some(stone => stone.includes(blank)) && field.some(stone => stone.includes(black)) && field.some(stone => stone.includes(white))){
 		return false;
 	}
 	return true;
@@ -250,4 +245,42 @@ function printResult() {
 		result += "引き分け";
 	}
 	document.getElementById("message").innerHTML = result;
+}
+
+function changeMode(){
+	mode = !mode;
+	if(mode){
+		document.getElementById("mode").textContent = "ふつう";
+	}else{
+		document.getElementById("mode").textContent = "やさしい";
+	}
+	printField();
+}
+
+function changeNpc(){
+	npc = !npc;
+	turn = black;
+	setfield();
+	printField();
+	document.getElementById("turn").textContent = "黒のターン";
+	if(npc){
+		document.getElementById("npc").textContent = "2人で遊ぶ";
+	}else{
+		document.getElementById("npc").textContent = "1人で遊ぶ";
+	}
+}
+
+function runNpc(){
+	let list = canPutPosList(white);
+	if(list.length!=0){
+		let index = Math.floor(Math.random()*list.length);
+		reverse(list[index]);
+	}
+	if(isFinish()){
+		printResult();
+		document.getElementById("turn").textContent = "";
+		return;
+	}
+	changeTurn();
+	printField();
 }
