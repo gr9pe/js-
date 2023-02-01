@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', function() {
 })
 
 function run(pos){
-	let inputPos = [parseInt(pos.charAt(0)),parseInt(pos.charAt(1))];
+	let inputPos = [parseInt(pos[0]),parseInt(pos[1])];
 	
 	let canPutFlag = false;
 	for(let canPutPos of canPutPosList(turn)) {
