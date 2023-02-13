@@ -260,7 +260,6 @@ function runNpc(){
 		let index = Math.floor(Math.random()*legalPos.length);
 		reverse(legalPos[index]);
 	}else{
-		changeTurn();
 		document.getElementById("message").textContent = `NPCは置ける場所がありません`;
 	}
 	changeTurn();
