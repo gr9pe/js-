@@ -8,13 +8,15 @@ let field = [];
 let turnColor = black;
 let easyMode = false;
 let useNpc = false;
+let blackPoints = 0;
+let whitePoints = 0;
 
 function newGame(){
 	turnColor = black;
 	document.getElementById("reStart").style.display ="none";
 	document.getElementById("message").textContent = "";
 	document.getElementById("turn").textContent = "黒のターン";
-    field=makeField();
+	field=makeField();
 	printField();
 }
 
@@ -25,17 +27,10 @@ function run(inputPos) {
 		reverse(inputPos);
 		changeTurn();
 		printField();
-	    if(useNpc && turnColor == white){
-		    setTimeout(runNpc, 600);
-	    }
-        
-	}else if(searchLegalPos(turnColor).length == 0){
-		document.getElementById("message").textContent = `${turnColor}は置ける場所がありません`;
-		changeTurn();
 	}else{
 	    document.getElementById("message").textContent = "その場所には置けません";
-    }
-    if(isFinish()){
+	}
+	if(isFinish()){
 		finishGame();
 	}
 }
@@ -46,16 +41,16 @@ function makeField(){
 		let line = [];
 		for(let j=0;j<10;j++) {
 			line.push({	state : i==0||i==9||j==0||j==9 ? wall : blank,
-					  pos : `${i}${j}`,
-					 makeHtml : function(state = this.state, onclick = `onclick = run('${this.pos}')`){return `<p class="yubi" ${onclick}> ${state} </p>`}
-				});
+						pos : `${i}${j}`,
+						makeHtml : function(state = this.state, onclick = `onclick = run('${this.pos}')`){return `<p class="yubi" ${onclick}> ${state} </p>`}
+					});
 		}
 		field[i] = line;
 	}
-	field[5][5].state = black;
-    field[4][4].state = black;
-	field[5][4].state = white;
-    field[4][5].state = white;
+	field[5][5].state = white;
+	field[4][4].state = white;
+	field[5][4].state = black;
+	field[4][5].state = black;
 	return field;
 }
 
@@ -80,6 +75,18 @@ function souldSuggestPrint(field,pos){
 	return false;
 }
 
+function changeTurn(){
+	turnColor == black ? turnColor = white : turnColor = black;
+	document.getElementById("turn").textContent = `${turnColor}のターン`;
+	if(searchLegalPos(turnColor).length == 0 && !isFinish()){
+        document.getElementById("message").textContent = `${turnColor}は置ける場所がありません`;
+        changeTurn();
+    }
+	if(useNpc && turnColor == white){
+        setTimeout(runNpc, 600);
+    }
+}
+
 function canPut(pos){
 	const legalPoses = searchLegalPos(turnColor);
 	if(legalPoses.length == 0){
@@ -93,7 +100,7 @@ function canPut(pos){
 
 function searchLegalPos(color=turnColor){
 	let enemy = getEnemy(color);
-    let legalPoses = [];
+	let legalPoses = [];
 	field.map((line,row)=>line.map((square,col)=>{
         if(field[row][col].state != blank){
             return;
@@ -145,23 +152,13 @@ function reverse(inputPos){
 				reversePosList = [...reversePosList,[row,col]];
 			}else {
 				for(let pos of reversePosList) {
-                    field[pos[0]][pos[1]].state = turnColor;
-                }
+                    			field[pos[0]][pos[1]].state = turnColor;
+				}
 				break;
 			}
 		}
 	}
     return field;
-}
-
-function changeTurn(){
-	if(turnColor == black) {
-		turnColor = white;
-		document.getElementById("turn").textContent = "白のターン";
-	}else {
-		turnColor = black;
-		document.getElementById("turn").textContent = "黒のターン";
-	}
 }
 
 function getEnemy(color){
@@ -231,17 +228,17 @@ function changeNpc(){
 }
 
 function runNpc(){
-	let legalPos = searchLegalPos(white);
-	if(legalPos.length!=0){
-		let index = Math.floor(Math.random()*legalPos.length);
-		reverse(legalPos[index]);
-	}else{
-		document.getElementById("message").textContent = `NPCは置ける場所がありません`;
+	if(searchLegalPos(turnColor).length==0){
+		return;
 	}
+	let legalPos = searchLegalPos(white);
+	let index = Math.floor(Math.random()*legalPos.length);
+	reverse(legalPos[index]);
 	changeTurn();
 	printField();
 	if(isFinish()){
 		finishGame();
 	}
 }
+
 newGame();
