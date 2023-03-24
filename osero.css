@@ -2,12 +2,21 @@ body{
 	text-align:center;
 }
 p{
-	display:inline;
 	font-size:24px;
 }
 button{
+	text-align:center;
 	font-size:20px;
 }
-.yubi{
+.square{
 	cursor:pointer;
+  	width: 50px;
+  	height: 50px;
+	display:inline;
+}
+.wall{
+	background-color:black;
+	width: 50px;
+  	height: 50px;
+	display:inline;
 }
