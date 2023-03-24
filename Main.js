@@ -15,7 +15,7 @@ function newGame(){
 	turnColor = black;
 	document.getElementById("reStart").style.display ="none";
 	document.getElementById("message").textContent = "";
-	document.getElementById("turn").textContent = "黒のターン";
+	document.getElementById("turn").textContent = "●のターン";
 	field=makeField();
 	printField();
 }
@@ -42,7 +42,11 @@ function makeField(){
 		for(let j=0;j<10;j++) {
 			line.push({	state : i==0||i==9||j==0||j==9 ? wall : blank,
 						pos : `${i}${j}`,
-						makeHtml : function(state = this.state, onclick = `onclick = run('${this.pos}')`){return `<p class="yubi" ${onclick}> ${state} </p>`}
+						makeHtml : function(state = this.state, onclick = `onclick = run('${this.pos}')`){
+							if(i==0||i==9||j==0||j==9){
+								return `<div class="wall"> ${state} </div>`;
+							}
+							return `<div class="square" ${onclick}> ${state} </div>`}
 					});
 		}
 		field[i] = line;
