@@ -33,6 +33,7 @@ function run(inputPos) {
 	if(isFinish()){
 		finishGame();
 	}
+
 }
 
 function makeField(){
@@ -124,7 +125,6 @@ function searchLegalPos(color=turnColor){
                 }else if(targetSquare == enemy) {
                     continue;
                 }else {
-                    canPutFlag = true;
                     legalPoses = [...legalPoses,square.pos];
                 }
             }
@@ -170,13 +170,7 @@ function getEnemy(color){
 }
 
 function countStone(color){
-	let stoneCount = 0;
-	field.map(line=>line.map(square=>{
-		if(square.state == color){
-			stoneCount++;
-		}
-	}));
-	return stoneCount;
+	return field.map(line=>line.filter(square=>square.state == color)).flat(2).length;
 }
 
 function isFinish() {
